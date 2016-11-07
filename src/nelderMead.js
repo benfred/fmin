@@ -13,8 +13,6 @@ export function nelderMead(f, x0, parameters) {
         chi = (parameters.chi !== undefined) ? parameters.chi : 2,
         psi = (parameters.psi !== undefined) ? parameters.psi : -0.5,
         sigma = (parameters.sigma !== undefined) ? parameters.sigma : 0.5,
-
-        callback = parameters.callback,
         maxDiff;
 
     // initialize simplex.
@@ -47,8 +45,21 @@ export function nelderMead(f, x0, parameters) {
 
     for (var iteration = 0; iteration < maxIterations; ++iteration) {
         simplex.sort(sortOrder);
-        if (callback) {
-            callback(simplex);
+
+        if (parameters.history) {
+            // copy the simplex (since later iterations will mutate) and
+            // sort it to have a consistent order between iterations
+            var sortedSimplex = simplex.map(function (x) {
+                var state = x.slice();
+                state.fx = x.fx;
+                state.id = x.id;
+                return state;
+            });
+            sortedSimplex.sort(function(a,b) { return a.id - b.id; });
+
+            parameters.history.push({x: simplex[0].slice(),
+                                     fx: simplex[0].fx,
+                                     simplex: sortedSimplex});
         }
 
         maxDiff = 0;
@@ -125,6 +136,6 @@ export function nelderMead(f, x0, parameters) {
     }
 
     simplex.sort(sortOrder);
-    return {f : simplex[0].fx,
-            solution : simplex[0]};
+    return {fx : simplex[0].fx,
+            x : simplex[0]};
 }

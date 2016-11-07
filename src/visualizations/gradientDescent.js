@@ -8,7 +8,7 @@ export function GradientContour(div, noslider) {
     this.duration = 100;
 
     var obj = this;
-    $(window).load( function() {
+    $(window).on("load", function() {
         obj.redraw();
         obj.initialize([-1, -1]);
         if (!noslider) {
@@ -31,7 +31,7 @@ GradientContour.prototype.calculateStates = function(initial) {
     this.stateIndex = 0;
     this.states = [];
     var f = (x, fxprime) => { this.current.fprime(x, fxprime); return this.current.f(x); };
-    AnimatedContour.gradientDescent(f, initial, {"history": this.states, 'maxIterations' : 5000, 'learnRate' : this.stepSize});
+    fmin.gradientDescent(f, initial, {"history": this.states, 'maxIterations' : 5000, 'learnRate' : this.stepSize});
 };
 
 GradientContour.prototype.initialize = function(initial) {

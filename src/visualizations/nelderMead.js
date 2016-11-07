@@ -10,7 +10,7 @@ export function NelderMeadContour(div) {
     this.params = {'chi' : 2, 'psi' : -0.5, 'sigma' : 0.5, 'rho' : 1};
 
     var obj = this, params = this.params;
-    $(window).load( function() {
+    $(window).on("load", function() {
         obj.redraw();
         obj.initialize([1.5, -1.5]);
         Slider(div.select("#expansion"), [1, 5],
@@ -39,21 +39,10 @@ NelderMeadContour.prototype.initialize = function(initial) {
     this.initial = initial.slice();
     var states = this.states = [];
     this.stateIndex = 0;
-    function pushState(x) {
-        var state=  [];
-        for (var i =0; i < x.length; ++i) {
-            state.push({'x': x[i][0], 'y' : x[i][1], 'id' : x[i].id });
-        }
-        state.sort(function(a,b) { return a.id - b.id; });
-
-        // todo: have nelder mead store this in history, format like others
-        state.fx = x[0].fx;
-        states.push(state);
-    }
-    this.params.callback = pushState;
+    this.params.history = states;
     fmin.nelderMead(this.current.f, initial, this.params);
 
-    var lines = this.plot.svg.selectAll(".simplex_line").data(this.states[0]);
+    var lines = this.plot.svg.selectAll(".simplex_line").data(this.states[0].simplex);
     lines.enter()
         .append("line")
         .attr("class", "simplex_line")
@@ -61,39 +50,36 @@ NelderMeadContour.prototype.initialize = function(initial) {
         .attr("stroke", "red")
         .attr("stroke-width", 2);
 
-    var circles = this.plot.svg.selectAll("circle").data(this.states[0]);
+    var circles = this.plot.svg.selectAll("circle").data(this.states[0].simplex);
 
     circles.enter()
            .append("circle")
            .style("fill", "red")
            .style("fill-opacity", 0.9)
            .attr("r", 5)
-           .attr("cx", d => this.plot.xScale(d.x))
-           .attr("cy", d => this.plot.yScale(d.y))
+           .attr("cx", d => this.plot.xScale(d[0]))
+           .attr("cy", d => this.plot.yScale(d[1]))
            .attr("filter", "url(#dropshadow)");
     this.increment(this.cycle, this.duration);
 };
 
 NelderMeadContour.prototype.displayState = function() {
     var duration = duration || this.duration;
-    var state = this.states[this.stateIndex];
+    var state = this.states[this.stateIndex].simplex;
 
     var lines = this.plot.svg.selectAll(".simplex_line")
        .data(state)
        .transition()
        .duration(this.stateIndex ? duration :0)
-       .attr("x1", d => this.plot.xScale(d.x))
-       .attr("y1", d => this.plot.yScale(d.y))
-       .attr("x2", (d, i) => this.plot.xScale(state[i ? i - 1 : 2].x))
-       .attr("y2", (d, i) => this.plot.yScale(state[i ? i - 1 : 2].y));
+       .attr("x1", d => this.plot.xScale(d[0]))
+       .attr("y1", d => this.plot.yScale(d[1]))
+       .attr("x2", (d, i) => this.plot.xScale(state[i ? i - 1 : 2][0]))
+       .attr("y2", (d, i) => this.plot.yScale(state[i ? i - 1 : 2][1]));
 
     var circles = this.plot.svg.selectAll("circle")
         .data(state)
         .transition()
         .duration(this.stateIndex ? duration :0)
-        .attr("cx", d => this.plot.xScale(d.x))
-        .attr("cy", d => this.plot.yScale(d.y));
+        .attr("cx", d => this.plot.xScale(d[0]))
+        .attr("cy", d => this.plot.yScale(d[1]));
 };
-
-//var simplex_contour = new NelderMeadContour(d3.select("#simplex"));
-

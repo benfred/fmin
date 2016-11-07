@@ -41,7 +41,7 @@ export function NelderMead1d(div) {
         div.select(".function_label").html(d3.select(this).html());
     });
 
-    $(window).load( function() {
+    $(window).on("load", function() {
         obj.redraw();
         obj.initialize([-4.5]);
 
@@ -80,21 +80,12 @@ NelderMead1d.prototype.initialize = function(initial) {
     this.stateIndex = 0;
 
     var states = this.states = [], graph = this.graph;
-
-    function pushState(x) {
-        var state =  [];
-        for (var i =0; i < x.length; ++i) {
-            state.push({'x': x[i][0], 'y' : graph.f()(x[i]), 'id' : x[i].id });
-        }
-        state.sort(function(a,b) { return a.id - b.id; });
-        states.push(state);
-    }
-
-    this.params.callback = pushState;
+    this.params.history = states;
 
     fmin.nelderMead(x => this.graph.f()(x[0]), initial, this.params);
 
-    var lines = this.plot.svg.selectAll(".simplex_line").data(this.states[0])
+    var lines = this.plot.svg.selectAll(".simplex_line")
+        .data(this.states[0].simplex)
         .enter()
         .append("line")
         .attr("class", "simplex_line")
@@ -102,15 +93,16 @@ NelderMead1d.prototype.initialize = function(initial) {
         .attr("stroke", "red")
         .attr("stroke-width", 2);
 
-    var circles = this.plot.svg.selectAll(".simplex_circle").data(states[0]);
-    circles.enter()
+    var circles = this.plot.svg.selectAll(".simplex_circle")
+        .data(this.states[0].simplex)
+        .enter()
         .append("circle")
         .attr("class", "simplex_circle")
         .style("fill", "red")
         .style("fill-opacity", 0.9)
         .attr("r", 5)
-        .attr("cx", d => this.plot.xScale(d.x))
-        .attr("cy", d => this.plot.yScale(d.y))
+        .attr("cx", d => this.plot.xScale(d[0]))
+        .attr("cy", d => this.plot.yScale(d.fx))
         .attr("filter", "url(#dropshadow)");
 
     this.cycle += 1;
@@ -121,24 +113,26 @@ NelderMead1d.prototype.increment = function(currentCycle, duration) {
     if (this.cycle != currentCycle) {
         return;
     }
-    this.div.select(".iterations").text("Iteration " + (this.stateIndex + 1) + "/" + this.states.length);
+    this.div.select(".iterations").text("Iteration " + (this.stateIndex + 1) + "/" +
+                    this.states.length + ", Loss=" + this.states[this.stateIndex].fx.toFixed(5));
+
     duration = duration || 500;
-    var state = this.states[this.stateIndex];
+    var state = this.states[this.stateIndex].simplex;
     var lines = this.plot.svg.selectAll(".simplex_line")
        .data(state)
        .transition()
        .duration(this.stateIndex ? duration : 0)
-       .attr("x1", d => this.plot.xScale(d.x))
-       .attr("y1", d => this.plot.yScale(d.y))
-       .attr("x2", (d, i) => this.plot.xScale(state[i ? i - 1 : state.length - 1].x))
-       .attr("y2", (d, i) => this.plot.yScale(state[i ? i - 1 : state.length - 1].y));
+       .attr("x1", d => this.plot.xScale(d[0]))
+       .attr("y1", d => this.plot.yScale(d.fx))
+       .attr("x2", (d, i) => this.plot.xScale(state[i ? i - 1 : state.length - 1][0]))
+       .attr("y2", (d, i) => this.plot.yScale(state[i ? i - 1 : state.length - 1].fx));
 
     var circles = this.plot.svg.selectAll(".simplex_circle")
         .data(state)
         .transition()
         .duration(this.stateIndex ? duration : 0)
-        .attr("cx", d => this.plot.xScale(d.x))
-        .attr("cy", d => this.plot.yScale(d.y));
+        .attr("cx", d => this.plot.xScale(d[0]))
+        .attr("cy", d => this.plot.yScale(d.fx));
 
     this.stateIndex += 1;
     if (this.stateIndex >= this.states.length) {
