@@ -33,50 +33,29 @@ export function RMSProp(f, initial, params) {
 }
 
 export function gradientDescentLineSearch(f, initial, params) {
-    // TODO: figure out proper wolf line search integration here
     params = params || {};
     var current = {x: initial.slice(), fx: 0, fxprime: initial.slice()},
-        maxIterations =  params.maxIterations || initial.length * 100,
+        next = {x: initial.slice(), fx: 0, fxprime: initial.slice()},
+        maxIterations = params.maxIterations || initial.length * 100,
         learnRate = params.learnRate || 0.001,
-        progress = 0;
-
+        pk = initial.slice(),
+        temp;
 
     current.fx = f(current.x, current.fxprime);
-
-
     for (var i = 0; i < maxIterations; ++i) {
-    /*
-        learnRate = wolfeLineSearch(f, pk, current, next, learnRate);
-        if (learnRate === 0) {
-            learnRate = params.learnRate || 0.0001;
-            // todo: is this right?
-//            return current;
-        }
-        */
-        var previous = current.fx;
-        current.fx = f(current.x, current.fxprime);
-
         if (params.history) {
             params.history.push({x: current.x.slice(),
                                  fx: current.fx,
                                  fxprime: current.fxprime.slice()});
         }
+        if ((learnRate === 0) || (norm2(current.fxprime) < 1e-5)) break;
 
-        if (norm2(current.fxprime) < 1e-5) break;
+        scale(pk, current.fxprime, -1);
+        learnRate = wolfeLineSearch(f, pk, current, next, learnRate);
 
-        weightedSum(current.x, 1, current.x, -learnRate, current.fxprime);
-
-
-        if (current.fx >= previous) {
-            learnRate *= 0.5;
-            progress = 0;
-        } else {
-            progress += 1;
-            if (progress > 5) {
-                learnRate *= 1.1;
-                progress = 0;
-            }
-        }
+        temp = current;
+        current = next;
+        next = temp;
     }
 
     return current;

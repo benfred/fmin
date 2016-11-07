@@ -18,11 +18,13 @@ function lessThan(test, left, right, message) {
 var optimizers = [fmin.nelderMead,
                   fmin.gradientDescent,
                   fmin.conjugateGradient,
-                  fmin.RMSProp],
+                  fmin.RMSProp,
+                  fmin.gradientDescentLineSearch],
     optimizerNames = ["Nelder Mead",
                       "Gradient Descent",
                       "Conjugate Gradient",
-                      "RMSProp"];
+                      "RMSProp",
+                      "Gradient Descent w/ Line Search"];
 
 tape("himmelblau", function(test) {
     // due to a bug, this used to not converge to the minimum

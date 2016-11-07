@@ -16,7 +16,7 @@ export function conjugateGradient(f, initial, params) {
 
     current.fx = f(current.x, current.fxprime);
     pk = current.fxprime.slice();
-    scale(pk, -1);
+    scale(pk, current.fxprime,-1);
 
     for (var i = 0; i < maxIterations; ++i) {
         a = wolfeLineSearch(f, pk, current, next, a);
@@ -32,9 +32,8 @@ export function conjugateGradient(f, initial, params) {
         if (!a) {
             // faiiled to find point that satifies wolfe conditions.
             // reset direction for next iteration
-            for (var j = 0; j < pk.length; ++j) {
-                pk[j] = -1 * current.fxprime[j];
-            }
+            scale(pk, current.fxprime, -1);
+
         } else {
             // update direction using Polak–Ribiere CG method
             weightedSum(yk, 1, next.fxprime, -1, current.fxprime);

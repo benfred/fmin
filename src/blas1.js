@@ -15,9 +15,9 @@ export function norm2(a)  {
     return Math.sqrt(dot(a, a));
 }
 
-export function scale(a, c) {
-    for (var i = 0; i < a.length; ++i) {
-        a[i] *= c;
+export function scale(ret, value, c) {
+    for (var i = 0; i < value.length; ++i) {
+        ret[i] = value[i] * c;
     }
 }
 

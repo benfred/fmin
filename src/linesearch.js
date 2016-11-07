@@ -4,6 +4,11 @@ var c1 = 1e-6, c2 = 0.1;
 
 /// searches along line 'pk' for a point that satifies the wolfe conditions
 /// See 'Numerical Optimization' by Nocedal and Wright p59-60
+/// f : objective function
+/// pk : search direction
+/// current: object containing current gradient/loss
+/// next: output: contains next gradient/loss
+/// returns a: step size taken
 export function wolfeLineSearch(f, pk, current, next, a) {
     var phi0 = current.fx, phiPrime0 = dot(current.fxprime, pk),
         phi = phi0, phi_old = phi0,
