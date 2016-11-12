@@ -76,6 +76,9 @@ NelderMead1d.prototype.redraw = function() {
 };
 
 NelderMead1d.prototype.initialize = function(initial) {
+    // stop any previous iteration
+    this.stop();
+
     this.initial = initial.slice();
     this.stateIndex = 0;
 
@@ -105,8 +108,15 @@ NelderMead1d.prototype.initialize = function(initial) {
         .attr("cy", d => this.plot.yScale(d.fx))
         .attr("filter", "url(#dropshadow)");
 
-    this.cycle += 1;
     this.increment(this.cycle, 1500);
+};
+
+NelderMead1d.prototype.stop = function() {
+    this.cycle += 1;
+};
+
+NelderMead1d.prototype.start = function() {
+    this.initialize(this.initial);
 };
 
 NelderMead1d.prototype.increment = function(currentCycle, duration) {

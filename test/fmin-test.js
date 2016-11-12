@@ -17,14 +17,13 @@ function lessThan(test, left, right, message) {
 
 var optimizers = [fmin.nelderMead,
                   fmin.gradientDescent,
-                  fmin.conjugateGradient,
-                  fmin.RMSProp,
-                  fmin.gradientDescentLineSearch],
+                  fmin.gradientDescentLineSearch,
+                  fmin.conjugateGradient];
+
     optimizerNames = ["Nelder Mead",
                       "Gradient Descent",
-                      "Conjugate Gradient",
-                      "RMSProp",
-                      "Gradient Descent w/ Line Search"];
+                      "Gradient Descent w/ Line Search",
+                      "Conjugate Gradient"];
 
 tape("himmelblau", function(test) {
     // due to a bug, this used to not converge to the minimum
@@ -74,7 +73,7 @@ tape("quadratic1D", function(test) {
         return (x[0] - 10) * (x[0] - 10);
 
     }
-    var params = {'learnRate' : 0.1};
+    var params = {'learnRate' : 0.5};
 
     for (var i = 0; i < optimizers.length; ++i) {
         var solution = optimizers[i](loss, [0], params);

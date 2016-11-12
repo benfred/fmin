@@ -36,6 +36,7 @@ export function NelderMeadContour(div) {
 NelderMeadContour.prototype = Object.create(AnimatedContour.prototype);
 
 NelderMeadContour.prototype.initialize = function(initial) {
+    this.stop();
     this.initial = initial.slice();
     var states = this.states = [];
     this.stateIndex = 0;

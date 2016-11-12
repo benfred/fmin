@@ -5,7 +5,7 @@ export function GradientContour(div, noslider) {
     AnimatedContour.call(this, div);
     this.colour = d3.schemeCategory10[1];
     this.stepSize = 0.05;
-    this.duration = 100;
+    this.duration = 500;
 
     var obj = this;
     $(window).on("load", function() {
@@ -35,6 +35,7 @@ GradientContour.prototype.calculateStates = function(initial) {
 };
 
 GradientContour.prototype.initialize = function(initial) {
+    this.stop();
     this.initial = initial.slice();
     this.calculateStates(initial);
 
@@ -46,9 +47,13 @@ GradientContour.prototype.initialize = function(initial) {
         .attr("class", "current");
 
     group.append("g")
+        .attr("class", "under");
+
+    group.append("g")
         .attr("class", "gradient");
 
     group.append("circle")
+           .attr("class", "ball")
            .style("fill", "red")
            .style("fill-opacity", 0.9)
            .attr("filter", "url(#dropshadow)")
@@ -56,7 +61,6 @@ GradientContour.prototype.initialize = function(initial) {
            .attr("cx", function(d) { return xScale(d.x[0]); })
            .attr("cy", function(d) { return yScale(d.x[1]); });
 
-    this.cycle += 1;
     this.increment(this.cycle, this.duration);
 };
 
@@ -67,7 +71,7 @@ GradientContour.prototype.displayState = function(){
         .transition()
         .duration(this.stateIndex ? this.duration :0);
 
-    group.select("circle")
+    group.select(".ball")
        .attr("cx", d => this.plot.xScale(d.x[0]))
        .attr("cy", d => this.plot.yScale(d.x[1]));
 

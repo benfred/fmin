@@ -86,3 +86,11 @@ AnimatedContour.prototype.increment = function(currentCycle, duration) {
         .duration(duration)
         .on("end", () => this.increment(currentCycle));
 };
+
+AnimatedContour.prototype.stop = function() {
+    this.cycle += 1;
+};
+
+AnimatedContour.prototype.start = function() {
+    this.initialize(this.initial);
+};
