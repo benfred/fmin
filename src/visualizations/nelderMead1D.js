@@ -41,27 +41,24 @@ export function NelderMead1d(div) {
         div.select(".function_label").html(d3.select(this).html());
     });
 
-    $(window).on("load", function() {
-        obj.redraw();
-        obj.initialize([-4.5]);
+    this.redraw();
+    this.initialize([-4.5]);
+    this.expansion = Slider(div.select("#expansion"), [1, 5],
+            function(x) {
+                div.select("#expansionvalue").text(" = " + x.toFixed(1) + "x");
+                params.chi = x;
+                obj.initialize(obj.initial);
+            },
+            {'format': function(d) { return d.toFixed(1) + "x"; }, 'initial' : 1.0});
 
-        obj.expansion = Slider(div.select("#expansion"), [1, 5],
-                function(x) {
-                    div.select("#expansionvalue").text(" = " + x.toFixed(1) + "x");
-                    params.chi = x;
-                    obj.initialize(obj.initial);
-                },
-                {'format': function(d) { return d.toFixed(1) + "x"; }, 'initial' : 1.0});
-
-        obj.contraction = Slider(div.select("#contraction"), [0.2, 1],
-                function(x) {
-                    div.select("#contractionvalue").text(" = " + x.toFixed(2) + "x");
-                    obj.params.sigma = x;
-                    obj.params.psi = -1 * x;
-                    obj.initialize(obj.initial);
-                },
-                {'format': function(d) { return (d).toFixed(1) + "x"; }, 'initial' : 1.0});
-    });
+    this.contraction = Slider(div.select("#contraction"), [0.2, 1],
+            function(x) {
+                div.select("#contractionvalue").text(" = " + x.toFixed(2) + "x");
+                obj.params.sigma = x;
+                obj.params.psi = -1 * x;
+                obj.initialize(obj.initial);
+            },
+            {'format': function(d) { return (d).toFixed(1) + "x"; }, 'initial' : 1.0});
 }
 
 NelderMead1d.prototype.redraw = function() {

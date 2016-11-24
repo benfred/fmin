@@ -29,8 +29,10 @@ export function gradientDescentLineSearch(f, initial, params) {
     var current = {x: initial.slice(), fx: 0, fxprime: initial.slice()},
         next = {x: initial.slice(), fx: 0, fxprime: initial.slice()},
         maxIterations = params.maxIterations || initial.length * 100,
-        learnRate = params.learnRate || 0.001,
+        learnRate = params.learnRate || 1,
         pk = initial.slice(),
+        c1 = params.c1 || 1e-3,
+        c2 = params.c2 || 0.1,
         temp,
         functionCalls = [];
 
@@ -46,21 +48,24 @@ export function gradientDescentLineSearch(f, initial, params) {
     current.fx = f(current.x, current.fxprime);
     for (var i = 0; i < maxIterations; ++i) {
         scale(pk, current.fxprime, -1);
-        learnRate = wolfeLineSearch(f, pk, current, next, learnRate);
+        learnRate = wolfeLineSearch(f, pk, current, next, learnRate, c1, c2);
 
         if (params.history) {
             params.history.push({x: current.x.slice(),
                                  fx: current.fx,
                                  fxprime: current.fxprime.slice(),
                                  functionCalls: functionCalls,
+                                 learnRate: learnRate,
                                  alpha: learnRate});
             functionCalls = [];
         }
-        if ((learnRate === 0) || (norm2(current.fxprime) < 1e-5)) break;
+
 
         temp = current;
         current = next;
         next = temp;
+
+        if ((learnRate === 0) || (norm2(current.fxprime) < 1e-5)) break;
     }
 
     return current;

@@ -3,43 +3,48 @@ import {flower, himmelblau, banana, matyas} from "./functions";
 import {ContourPlot} from "../../node_modules/contour_plot/index.js";
 
 export function AnimatedContour(div) {
-    this.current = flower;
+    this.current = this.current || himmelblau;
+    this.initial = this.current.initial.slice() || [1, 1];
     this.plot = null;
     this.div = div;
-    this.colour = d3.schemeCategory10[0];
+    this.colour = this.colour || d3.schemeCategory10[0];
     this.states =[];
     this.stateIndex = 0;
     this.cycle = 0;
-    this.initial = [-1, -1];
 
     var contour = this;
     div.select(".function_flower").on("click", function() {
         contour.current = flower;
         contour.redraw();
-        contour.initialize([-4.2, 3.2]);
+        contour.initialize(contour.current.initial.slice());
         div.select(".function_label").html(d3.select(this).html());
     });
 
     div.select(".function_himmelblau").on("click", function() {
         contour.current = himmelblau;
         contour.redraw();
-        contour.initialize([1.5, -1.5]);
+        contour.initialize(contour.current.initial.slice());
         div.select(".function_label").html(d3.select(this).html());
     });
 
     div.select(".function_banana").on("click", function() {
         contour.current = banana;
         contour.redraw();
-        contour.initialize([-1, -1]);
+        contour.initialize(contour.current.initial.slice());
+        div.select(".function_label").html(d3.select(this).html());
         div.select(".function_label").html(d3.select(this).html());
     });
 
     div.select(".function_matyas").on("click", function() {
         contour.current = matyas;
         contour.redraw();
-        contour.initialize([-7.79, -6.22]);
+        contour.initialize(contour.current.initial.slice());
         div.select(".function_label").html(d3.select(this).html());
     });
+
+    this.redraw();
+    this.initialize(this.initial);
+    this.drawControls();
 }
 
 AnimatedContour.prototype.redraw = function() {

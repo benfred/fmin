@@ -1,19 +1,50 @@
 import {GradientContour} from "./gradientDescent";
-import {flower} from "./functions";
+import {flower, matyas} from "./functions";
+import {Slider} from "./slider";
 
 export function LineSearchContour(div) {
-    GradientContour.call(this, div, true);
     this.duration = 1000;
     this.colour = d3.schemeCategory10[1];
-    this.current = flower;
+    this.current = matyas;
+    this.params = {'c1': 1e-4,'c2': 0.5};
+    GradientContour.call(this, div, true);
 }
+
 LineSearchContour.prototype = Object.create(GradientContour.prototype);
+
+LineSearchContour.prototype.drawControls = function() {
+    var obj = this;
+    Slider(this.div.select("#c1"), [1e-5, 1],
+            function(x) {
+                obj.params.c1 = x;
+                obj.div.select("#c1value").text(" = " + x.toFixed(4));
+                obj.initialize(obj.initial);
+            },
+            {'format': function(d) { return d.toString(); },
+              'initial': obj.params.c1,
+              'scale': d3.scaleLog(),
+              'ticks': 5});
+
+    Slider(this.div.select("#c2"), [1e-5, 1],
+            function(x) {
+                obj.params.c2 = x;
+                obj.div.select("#c2value").text(" = " + x.toFixed(4));
+                obj.initialize(obj.initial);
+            },
+            {'format': function(d) { return d.toString(); },
+             'initial': obj.params.c2,
+              'scale': d3.scaleLog(),
+              'ticks': 5});
+
+};
 
 LineSearchContour.prototype.calculateStates = function(initial) {
     this.stateIndex = 0;
     this.states = [];
     var f = (x, fxprime) => { this.current.fprime(x, fxprime); return this.current.f(x); };
-    fmin.gradientDescentLineSearch(f, initial, {"history": this.states, 'maxIterations' : 5000});
+    this.params.history = this.states;
+    this.params.maxIterations = 5000;
+    fmin.gradientDescentLineSearch(f, initial, this.params);
 };
 
 LineSearchContour.prototype.displayState = function(){

@@ -37,7 +37,7 @@ tape("himmelblau", function(test) {
         fxprime[0] = 2 * (x + 2 *y  - 7) + 4 * (2 * x + y - 5);
         fxprime[1] = 4 * (x + 2 * y - 7) + 2 * (2 * x + y - 5);
         return Math.pow(x + 2 * y - 7, 2) + Math.pow(2 * x + y - 5, 2);
-    };
+    }
 
     for (var i = 0; i < optimizers.length; ++i) {
         var solution = optimizers[i](himmelblau, [x, y], params);
@@ -55,7 +55,7 @@ tape("banana", function(test) {
         var x = X[0], y = X[1];
         fxprime[0] = 400 * x * x * x - 400 * y * x + 2 * x - 2;
         fxprime[1] = 200 * y - 200 * x * x;
-        return (1 - x) * (1 - x) + 100 * (y - x * x) * ( y - x * x)
+        return (1 - x) * (1 - x) + 100 * (y - x * x) * (y - x * x);
     }
 
     var params = {'learnRate' : 0.0003, 'maxIterations' : 50000};
@@ -72,7 +72,8 @@ tape("quadratic1D", function(test) {
         xprime[0] = 2 * (x[0] - 10);
         return (x[0] - 10) * (x[0] - 10);
 
-    }
+    };
+
     var params = {'learnRate' : 0.5};
 
     for (var i = 0; i < optimizers.length; ++i) {
@@ -80,5 +81,16 @@ tape("quadratic1D", function(test) {
         nearlyEqual(test, solution.fx, 0, SMALL, "quadratic_1d:" + optimizerNames[i]);
     }
 
+    test.end();
+});
+
+tape("nelderMead", function(test) {
+    function loss(X) {
+        var x = X[0], y = X[1];
+        return Math.sin(y) * x  + Math.sin(x) * y  +  x * x +  y *y;
+    }
+
+    var solution = fmin.nelderMead(loss, [-3.5, 3.5]);
+    nearlyEqual(test, solution.fx, 0, SMALL, "nelderMead");
     test.end();
 });

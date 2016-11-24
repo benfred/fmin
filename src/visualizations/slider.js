@@ -55,9 +55,14 @@ export function Slider(div, domain, callback, params) {
         .attr("r", 9)
         .attr("cx", x(params.initial || x.invert(0)));
 
+    function move(value, duration) {
+       handle.transition().duration(duration).attr("cx", x(value));
+    }
+
     function change(value) {
         handle.attr("cx", x(value));
         callback(value);
     }
-    return change;
+
+    return {'change': change, 'move': move};
 }

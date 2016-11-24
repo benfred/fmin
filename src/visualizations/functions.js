@@ -36,6 +36,7 @@ export var dixonPrice = {
 };
 
 export var banana = {
+    'initial': [-1, -1],
     'f' : function(X) {
         var x = X[0], y = X[1];
         return (1 - x) * (1 - x) + 100 * (y - x * x) * (y - x * x);
@@ -54,6 +55,8 @@ export var banana = {
 };
 
 export var matyas = {
+    'initial': [-9.08, -7.83],
+
     'f' : function(X) {
         var x = X[0], y = X[1];
         return 0.26 * (x * x + y * y)  - 0.48 * x * y;
@@ -91,11 +94,12 @@ export var booth = {
 };
 
 export var himmelblau = {
-    'f' : function(X) {
+    'initial': [-0.15, 0.67],
+    'f': function(X) {
         var x = X[0], y = X[1];
         return (x * x + y - 11) * ( x * x + y - 11) + (x + y * y - 7) * (x + y * y - 7);
     },
-    'fprime' : function(X, fxprime) {
+    'fprime': function(X, fxprime) {
         fxprime = fxprime || [0, 0];
         var x = X[0], y = X[1];
         fxprime[0] = 4 * (x * x + y - 11) * x + 2 * (x + y * y - 7);
@@ -112,12 +116,14 @@ export var himmelblau = {
 };
 
 export var flower = {
-    'f' : function(X) {
+    'initial': [-3.5, 3.5],
+
+    'f': function(X) {
         var x = X[0], y = X[1];
         return Math.sin(y) * x  + Math.sin(x) * y  +  x * x +  y *y;
     },
 
-    'fprime' : function(X, fxprime) {
+    'fprime': function(X, fxprime) {
         fxprime = fxprime || [0, 0];
         var x = X[0], y = X[1];
         fxprime[0] = Math.sin(y) + Math.cos(x) * y + 2 * x;

@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "Unconstrained funcion minimization in Javascript",
   "keywords": [
-    "fmin", "optimization", "Nelder-Mead", "Conjudate Gradient"
+    "fmin",
+    "optimization",
+    "Nelder-Mead",
+    "Conjudate Gradient"
   ],
   "license": "BSD-3-Clause",
   "main": "build/fmin.js",
@@ -11,7 +14,7 @@
   "homepage": "https://github.com/benfred/fmin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/benfred/fmin.git"
+    "url": "git+https://github.com/benfred/fmin.git"
   },
   "jshintConfig": {
     "esnext": true
@@ -28,5 +31,20 @@
     "rollup": "0.25",
     "tape": "4",
     "uglify-js": "2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/benfred/fmin/issues"
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "dependencies": {
+    "contour_plot": "^0.0.1",
+    "json2module": "^0.0.3",
+    "rollup": "^0.25.8",
+    "tape": "^4.5.1",
+    "uglify-js": "^2.6.2"
+  },
+  "author": "Ben Frederickson"
 }

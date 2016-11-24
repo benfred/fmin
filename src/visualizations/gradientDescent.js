@@ -1,37 +1,53 @@
 import {Slider} from "./slider";
 import {AnimatedContour} from "./animatedContour";
 
-export function GradientContour(div, noslider) {
+export function GradientContour(div) {
+    this.stepSize = 0.01;
+    this.colour = this.colour || d3.schemeCategory10[1];
+    this.duration = this.duration || 500;
+    this.enableLineSearch = false;
+
     AnimatedContour.call(this, div);
-    this.colour = d3.schemeCategory10[1];
-    this.stepSize = 0.05;
-    this.duration = 500;
 
     var obj = this;
-    $(window).on("load", function() {
-        obj.redraw();
-        obj.initialize([-1, -1]);
-        if (!noslider) {
-            obj.learnRate = Slider(div.select("#learningrate"), [0.0001, 1],
-                    function(x) {
-                        obj.stepSize = x;
-                        obj.initialize(obj.initial);
-                        div.select("#learningratevalue").text(" = " + x.toFixed(4));
-                    },
-                    {'format': function(d) { return d.toString(); },
-                      'initial': 0.05,
-                      'scale': d3.scaleLog(),
-                      'ticks' : 3});
-        }
+    div.select("#linesearchcheck").on("change", function() {
+        obj.enableLineSearch =document.getElementById("linesearchcheck").checked;
+        obj.initialize(obj.initial);
     });
 }
+
 GradientContour.prototype = Object.create(AnimatedContour.prototype);
+
+GradientContour.prototype.drawControls = function() {
+    var obj = this;
+    this.learnRate = Slider(this.div.select("#learningrate"), [0.0001, 1],
+                            // TODO: why can't I just go 'this.setStepSize' here instead?
+                            // feel like I fundamentally am missing something with JS
+                            function(x) { return obj.setStepSize(x); },
+                            {'format': function(d) { return d.toString(); },
+                              'initial': this.stepSize,
+                              'scale': d3.scaleLog(),
+                              'ticks': 4});
+};
+
+GradientContour.prototype.setStepSize = function(x) {
+    this.stepSize = x;
+    this.initialize(this.initial);
+    this.div.select("#learningratevalue").text(" = " + x.toFixed(4));
+};
 
 GradientContour.prototype.calculateStates = function(initial) {
     this.stateIndex = 0;
     this.states = [];
     var f = (x, fxprime) => { this.current.fprime(x, fxprime); return this.current.f(x); };
-    fmin.gradientDescent(f, initial, {"history": this.states, 'maxIterations' : 5000, 'learnRate' : this.stepSize});
+
+    var params = {"history": this.states, 'maxIterations' : 5000, 'learnRate' : this.stepSize};
+
+    if (this.enableLineSearch) {
+        fmin.gradientDescentLineSearch(f, initial, params);
+    } else {
+        fmin.gradientDescent(f, initial, params);
+    }
 };
 
 GradientContour.prototype.initialize = function(initial) {
@@ -77,6 +93,12 @@ GradientContour.prototype.displayState = function(){
 
     if (this.stateIndex) {
         var d = this.states[this.stateIndex-1];
+
+        if (this.enableLineSearch) {
+            this.learnRate.move(d.learnRate, this.duration);
+            this.div.select("#learningratevalue").text(" = " + d.learnRate.toFixed(4));
+        }
+
         var line = this.plot.svg.selectAll(".current .gradient").append("line")
             .attr("stroke-opacity", 0.9)
             .attr("stroke", "red")

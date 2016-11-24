@@ -1,39 +1,37 @@
 import {Slider} from "./slider";
 import {AnimatedContour} from "./animatedContour";
-import {himmelblau} from "./functions";
+import {flower} from "./functions";
 
 export function NelderMeadContour(div) {
-    AnimatedContour.call(this, div);
     this.colour = d3.schemeCategory10[0];
-    this.current = himmelblau;
+    this.current = flower;
     this.duration = 500;
     this.params = {'chi' : 2, 'psi' : -0.5, 'sigma' : 0.5, 'rho' : 1};
-
-    var obj = this, params = this.params;
-    $(window).on("load", function() {
-        obj.redraw();
-        obj.initialize([1.5, -1.5]);
-        Slider(div.select("#expansion"), [1, 5],
-                function(x) {
-                    params.chi = x;
-                    obj.initialize(obj.initial);
-                    div.select("#expansionvalue").text(" = " + x.toFixed(1) + "x");
-
-                },
-                {'format': function(d) { return d.toFixed(1) + "x"; }, 'initial' : 2.0});
-
-        Slider(div.select("#contraction"), [0.2, 1],
-                function(x) {
-                    params.sigma = x;
-                    params.psi = -1 * x;
-                    obj.initialize(obj.initial);
-                    div.select("#contractionvalue").text(" = " + x.toFixed(2) + "x");
-                },
-                {'format': function(d) { return (d).toFixed(1) + "x"; },
-                 'initial': 0.5});
-    });
+    AnimatedContour.call(this, div);
 }
+
 NelderMeadContour.prototype = Object.create(AnimatedContour.prototype);
+
+NelderMeadContour.prototype.drawControls = function() {
+    var obj = this, params = this.params, div = this.div;
+    Slider(div.select("#expansion"), [1, 5],
+            function(x) {
+                params.chi = x;
+                obj.initialize(obj.initial);
+                div.select("#expansionvalue").text(" = " + x.toFixed(1) + "x");
+            },
+            {'format': function(d) { return d.toFixed(1) + "x"; }, 'initial' : 2.0});
+
+    Slider(div.select("#contraction"), [0.2, 1],
+            function(x) {
+                params.sigma = x;
+                params.psi = -1 * x;
+                obj.initialize(obj.initial);
+                div.select("#contractionvalue").text(" = " + x.toFixed(2) + "x");
+            },
+            {'format': function(d) { return (d).toFixed(1) + "x"; },
+             'initial': 0.5});
+};
 
 NelderMeadContour.prototype.initialize = function(initial) {
     this.stop();

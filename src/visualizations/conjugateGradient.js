@@ -2,12 +2,17 @@ import {GradientContour} from "./gradientDescent";
 import {banana} from "./functions";
 
 export function ConjugateGradientContour(div) {
-    GradientContour.call(this, div, true);
-    this.duration = 1000;
     this.colour = d3.schemeCategory10[2];
     this.current = banana;
+    this.duration = 1000;
+    GradientContour.call(this, div);
 }
+
 ConjugateGradientContour.prototype = Object.create(GradientContour.prototype);
+
+ConjugateGradientContour.prototype.drawControls = function() {
+    // TODO
+};
 
 ConjugateGradientContour.prototype.redraw = function() {
     // add an arrow marker for the gradients

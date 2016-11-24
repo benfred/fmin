@@ -1,6 +1,5 @@
 import {dot, weightedSum} from "./blas1";
 
-var c1 = 1e-6, c2 = 0.1;
 
 /// searches along line 'pk' for a point that satifies the wolfe conditions
 /// See 'Numerical Optimization' by Nocedal and Wright p59-60
@@ -9,13 +8,15 @@ var c1 = 1e-6, c2 = 0.1;
 /// current: object containing current gradient/loss
 /// next: output: contains next gradient/loss
 /// returns a: step size taken
-export function wolfeLineSearch(f, pk, current, next, a) {
+export function wolfeLineSearch(f, pk, current, next, a, c1, c2) {
     var phi0 = current.fx, phiPrime0 = dot(current.fxprime, pk),
         phi = phi0, phi_old = phi0,
         phiPrime = phiPrime0,
         a0 = 0;
 
     a = a || 1;
+    c1 = c1 || 1e-6;
+    c2 = c2 || 0.1;
 
     function zoom(a_lo, a_high, phi_lo) {
         for (var iteration = 0; iteration < 16; ++iteration) {
@@ -67,5 +68,5 @@ export function wolfeLineSearch(f, pk, current, next, a) {
         a *= 2;
     }
 
-    return 0;
+    return a;
 }

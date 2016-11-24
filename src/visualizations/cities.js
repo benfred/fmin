@@ -1,3 +1,6 @@
+import {Slider} from "./slider";
+import {createDropShadowFilter} from "./dropshadow";
+
 function mdsGradient(x, distances, fxprime) {
     var loss = 0, i;
     fxprime = fxprime || fmin.zeros(x.length);
@@ -195,26 +198,31 @@ export function createCitiesAnimation(div) {
         distances = can_us.distances,
         labels = can_us.labels,
         duration = 500,
+        count = 20,
         previous = null;
 
     params.learnRate = 0.002;
+    params.maxIterations = 10000;
 
     function recalculateSolution() {
         if (previous) {
             previous.stop();
         }
 
-        var solution = mds(distances, params);
+        var truncated = distances.slice(0, count).map(function(x) { return x.slice(0, count); });
+
+        var solution = mds(truncated, params);
         normalizeSolution(solution);
         div.select("svg").selectAll("g").data([]).exit().remove();
-        previous = animatedScatterPlot(div, solution, labels, duration);
+        previous = animatedScatterPlot(div, solution, labels.slice(0, count), duration);
     }
-    recalculateSolution();
 
-    function setAlgorithm(name, solver) {
+    function setAlgorithm(name, solver, showSlider) {
+        div.select(".learningrateslider").style("display", showSlider? "block" : "none");
         params.solver = solver;
         div.select(".algorithm_label").text(name);
         recalculateSolution();
+
         return true;
     }
 
@@ -224,14 +232,50 @@ export function createCitiesAnimation(div) {
         div.select(".speed_label").text(speed + "ms / Iteration");
     }
 
+    function setCount(c) {
+        count = c;
+        div.select(".count_label").text(c + " Cities");
+        recalculateSolution();
+    }
+
+    function setLearnRate(c) {
+        params.learnRate = c;
+        div.select("#learningratevalue").text(c.toFixed(5));
+        recalculateSolution();
+    }
+
     div.select(".randomize").on("click", recalculateSolution);
     div.select(".algo_cg").on("click", function() { setAlgorithm('Conjugate Gradient', fmin.conjugateGradient); });
-    div.select(".algo_gd").on("click", function() { setAlgorithm('Gradient Descent', fmin.gradientDescent); });
+    div.select(".algo_gd").on("click", function() {
+        setAlgorithm('Gradient Descent', fmin.gradientDescent, true);});
     div.select(".algo_gdls").on("click", function() { setAlgorithm('Gradient Descent w/ Linesearch', fmin.gradientDescentLineSearch); });
-    div.select(".algo_neldermead").on("click", function() { setAlgorithm('Nelder Mead', fmin.nelderMead); });
+    div.select(".algo_neldermead").on("click", function() {
+        setSpeed(25);
+        if (count > 15) {
+            setCount(15);
+        }
+
+        setAlgorithm('Nelder Mead', fmin.nelderMead);
+    });
 
     div.select(".speed_500").on("click", function() { setSpeed(500); });
     div.select(".speed_100").on("click", function() { setSpeed(100); });
     div.select(".speed_50").on("click", function() { setSpeed(50); });
     div.select(".speed_25").on("click", function() { setSpeed(25); });
+
+    div.select(".count5").on("click", function() { setCount(5); });
+    div.select(".count10").on("click", function() { setCount(10); });
+    div.select(".count15").on("click", function() { setCount(15); });
+    div.select(".count20").on("click", function() { setCount(20); });
+    div.select(".count25").on("click", function() { setCount(25); });
+
+
+    Slider(div.select("#learningrate"), [0.00001, 0.01],
+           function(x) { return setLearnRate(x); },
+           {'format': function(d) { return d.toString(); },
+              'initial': params.learnRate,
+              'scale': d3.scaleLog(),
+              'ticks': 3});
+
+    setAlgorithm('Conjugate Gradient', fmin.conjugateGradient);
 }
