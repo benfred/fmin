@@ -30,7 +30,8 @@
     "json2module": "0.0",
     "rollup": "0.25",
     "tape": "4",
-    "uglify-js": "2"
+    "uglify-js": "2",
+    "jshint": "^2.8.0"
   },
   "bugs": {
     "url": "https://github.com/benfred/fmin/issues"
