@@ -108,6 +108,8 @@ function animatedScatterPlot(element, history, labels, duration) {
             .attr("width", w)
             .attr("height", h);
 
+    createDropShadowFilter(svg);
+
     var under = svg.append("g"),
         over = svg.append("g");
 
@@ -140,6 +142,7 @@ function animatedScatterPlot(element, history, labels, duration) {
             .append("g");
 
         enter.append("circle")
+            .attr("filter", "url(#dropshadow)")
             .attr("r", pointRadius)
             .attr("fill", function(d, i) { return colours[i % colours.length]; })
             .attr("cx", function(d) { return xScale(d[0]); })
@@ -202,7 +205,7 @@ export function createCitiesAnimation(div) {
         previous = null;
 
     params.learnRate = 0.002;
-    params.maxIterations = 10000;
+    params.maxIterations = 12000;
 
     function recalculateSolution() {
         if (previous) {

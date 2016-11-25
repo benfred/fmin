@@ -111,6 +111,7 @@ GradientContour.prototype.displayState = function(){
         line.transition().duration(this.duration)
            .attr("x2", this.plot.xScale(state.x[0]))
            .attr("y2", this.plot.yScale(state.x[1]));
+
     } else {
         this.plot.svg.selectAll(".current line").data([]).exit().remove();
     }
