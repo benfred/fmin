@@ -58,8 +58,8 @@ The goal here is to move downwards along the gradient so that
 the loss is reduced sufficiently (controlled by the c1 parameter)
 and also that the slope of the loss is decreased sufficiently (controlled by the
 c2 parameter). Making sure the slope decreases sufficiently ensures that
-we don't take too many short steps, and is usually the more important parameter
-here. </p>
+we don't take too many short steps. Note that c1 should always be less than c2 or this won't work
+appropiately</p>
 
 <p>
 The goal here isn't to exactly find the best point along the line, but to

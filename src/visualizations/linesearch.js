@@ -1,11 +1,11 @@
 import {GradientContour} from "./gradientDescent";
-import {flower, matyas} from "./functions";
+import {himmelblau} from "./functions";
 import {Slider} from "./slider";
 
 export function LineSearchContour(div) {
     this.duration = 1000;
     this.colour = d3.schemeCategory10[1];
-    this.current = matyas;
+    this.current = himmelblau;
     this.params = {'c1': 1e-4,'c2': 0.5};
     GradientContour.call(this, div, true);
 }
