@@ -116,7 +116,7 @@ export var himmelblau = {
 };
 
 export var flower = {
-    'initial': [-3.5, 3.5],
+    'initial': [-3.5, 2.75],
 
     'f': function(X) {
         var x = X[0], y = X[1];
