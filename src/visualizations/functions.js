@@ -71,6 +71,12 @@ export var matyas = {
         return fxprime;
     },
 
+
+    // directly from fprime
+    'A': [[0.52, -0.48],
+          [-0.48, 0.52]],
+    'b': [0, 0],
+
     'xDomain': [-10, 10],
     'yDomain': [10, -10]
 };
@@ -88,6 +94,11 @@ export var booth = {
         fxprime[1] = 4 * (x + 2 * y - 7) + 2 * (2 * x + y - 5);
         return fxprime;
     },
+
+    'initial': [-8, 7],
+    'A': [[10, 8],
+          [8, 10]],
+    'b': [34, 38],
 
     'xDomain': [-10, 10],
     'yDomain': [10, -10]

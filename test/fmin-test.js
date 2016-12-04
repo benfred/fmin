@@ -94,3 +94,25 @@ tape("nelderMead", function(test) {
     nearlyEqual(test, solution.fx, 0, SMALL, "nelderMead");
     test.end();
 });
+
+tape("conjugateGradientSolve", function(test) {
+    // matyas function
+    var A = [[0.52, -0.48],
+             [-0.48, 0.52]],
+        b = [0, 0],
+        initial = [-9.08, -7.83];
+    var x = fmin.conjugateGradientSolve(A, b, initial);
+    nearlyEqual(test, x[0], 0, SMALL, 'matyas.x');
+    nearlyEqual(test, x[1], 0, SMALL, 'matyas.y');
+
+    // booth's function
+    var history = [];
+    A = [[10, 8],
+         [8, 10]];
+    b = [34, 38];
+    x = fmin.conjugateGradientSolve(A, b, initial, history);
+    nearlyEqual(test, x[0], 1, SMALL, 'booth.x');
+    nearlyEqual(test, x[1], 3, SMALL, 'booth.y');
+    console.log(history);
+    test.end();
+});

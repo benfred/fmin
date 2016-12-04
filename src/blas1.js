@@ -26,3 +26,9 @@ export function weightedSum(ret, w1, v1, w2, v2) {
         ret[j] = w1 * v1[j] + w2 * v2[j];
     }
 }
+
+export function gemv(output, A, x) {
+    for (var i = 0; i < output.length; ++i) {
+        output[i] = dot(A[i], x);
+    }
+}

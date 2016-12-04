@@ -1,4 +1,4 @@
-import {dot, norm2, scale, weightedSum} from "./blas1";
+import {dot, norm2, scale, weightedSum, gemv} from "./blas1";
 import {wolfeLineSearch} from "./linesearch";
 
 export function conjugateGradient(f, initial, params) {
@@ -61,4 +61,45 @@ export function conjugateGradient(f, initial, params) {
     }
 
     return current;
+}
+
+/// Solves a system of lienar equations Ax =b for x
+/// using the conjugate gradient method.
+export function conjugateGradientSolve(A, b, x, history) {
+    var r = x.slice(),
+        Ap = x.slice(), p, rsold, rsnew, alpha;
+
+    // r = b - A*x
+    gemv(Ap, A, x);
+    weightedSum(r, 1, b, -1, Ap);
+    p = r.slice();
+    rsold = dot(r, r);
+
+    for (var i = 0; i < b.length; ++i) {
+        gemv(Ap, A, p);
+        alpha = rsold / dot(p, Ap);
+        if (history) {
+            history.push({x: x.slice(),
+                         p: p.slice(),
+                         alpha: alpha});
+        }
+
+        //x=x+alpha*p;
+        weightedSum(x, 1, x, alpha, p);
+
+        // r=r-alpha*Ap;
+        weightedSum(r, 1, r, -alpha, Ap);
+        rsnew = dot(r, r);
+        if (Math.sqrt(rsnew) <= 1e-10) break;
+
+        // p=r+(rsnew/rsold)*p;
+        weightedSum(p, 1, r, rsnew/rsold, p);
+        rsold=rsnew;
+    }
+    if (history) {
+        history.push({x: x.slice(),
+                     p: p.slice(),
+                     alpha: alpha});
+    }
+    return x;
 }

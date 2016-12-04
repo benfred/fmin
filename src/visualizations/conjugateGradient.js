@@ -1,9 +1,9 @@
 import {GradientContour} from "./gradientDescent";
-import {banana} from "./functions";
+import {matyas, banana} from "./functions";
 
 export function ConjugateGradientContour(div) {
     this.colour = d3.schemeCategory10[2];
-    this.current = banana;
+    this.current = this.current || banana;
     this.duration = 1000;
     GradientContour.call(this, div);
 }
@@ -52,5 +52,25 @@ ConjugateGradientContour.prototype.displayState = function(){
             .attr("y1", this.plot.yScale(d.x[1]))
             .attr("x2", this.plot.xScale(d.x[0] - d.alpha * d.fxprime[0]))
             .attr("y2", this.plot.yScale(d.x[1] - d.alpha * d.fxprime[1]));
+    }
+};
+
+export function ConjugateGradientSolverContour(div) {
+    this.current = matyas;
+    ConjugateGradientContour.call(this, div);
+}
+
+ConjugateGradientSolverContour.prototype = Object.create(ConjugateGradientContour.prototype);
+
+
+ConjugateGradientSolverContour.prototype.calculateStates = function(initial) {
+    this.stateIndex = 0;
+    this.states = [];
+    fmin.conjugateGradientSolve(this.current.A, this.current.b, initial, this.states);
+
+    for (var i = 0; i < this.states.length; ++i) {
+        var state = this.states[i];
+        state.fx = this.current.f(state.x);
+        state.fxprime = this.current.fprime(state.x);
     }
 };

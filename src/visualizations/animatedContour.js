@@ -1,5 +1,5 @@
 import {createDropShadowFilter} from "./dropshadow";
-import {flower, himmelblau, banana, matyas} from "./functions";
+import {flower, himmelblau, banana, matyas, booth} from "./functions";
 import {ContourPlot} from "../../node_modules/contour_plot/index.js";
 
 export function AnimatedContour(div) {
@@ -42,6 +42,14 @@ export function AnimatedContour(div) {
         div.select(".function_label").html(d3.select(this).html());
     });
 
+    div.select(".function_booth").on("click", function() {
+        contour.current = booth;
+        contour.redraw();
+        contour.initialize(contour.current.initial.slice());
+        div.select(".function_label").html(d3.select(this).html());
+    });
+
+
     this.redraw();
     this.initialize(this.initial);
     this.drawControls();
@@ -76,8 +84,8 @@ AnimatedContour.prototype.increment = function(currentCycle, duration) {
     }
 
     this.displayState();
-    this.div.select(".iterations").text("Iteration " + (this.stateIndex + 1) + "/" +
-                    this.states.length + ", Loss=" + this.states[this.stateIndex].fx.toFixed(5));
+    this.div.select(".iterations").text("Iteration " + (this.stateIndex) + "/" +
+                    (this.states.length - 1) + ", Loss=" + this.states[this.stateIndex].fx.toFixed(5));
 
     duration = duration || this.duration;
 
