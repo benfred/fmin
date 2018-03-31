@@ -22,15 +22,14 @@
   "scripts": {
     "pretest": "rm -rf build && mkdir build && json2module package.json > build/package.js && rollup -f umd -n fmin -o build/fmin.js -- index.js && rollup -f umd -n fmin_vis -o build/fmin_vis.js -- index_vis.js",
     "test": "jshint src/*.js src/visualizations/*.js && tape 'test/**/*-test.js'",
-    "prepublish": "npm run test && uglifyjs build/fmin.js -c -m -o build/fmin.min.js",
+    "prepare": "npm run test && uglifyjs build/fmin.js -c -m -o build/fmin.min.js",
     "postpublish": "zip -j build/fmin.zip -- LICENSE README.md build/fmin.js build/fmin.min.js"
   },
   "devDependencies": {
-    "contour_plot": "0.0.1",
     "json2module": "0.0",
     "rollup": "0.25",
     "tape": "4",
-    "uglify-js": "2",
+    "uglify-js": "^2.6.0",
     "jshint": "^2.8.0"
   },
   "bugs": {
@@ -41,11 +40,7 @@
     "test": "test"
   },
   "dependencies": {
-    "contour_plot": "^0.0.1",
-    "json2module": "^0.0.3",
-    "rollup": "^0.25.8",
-    "tape": "^4.5.1",
-    "uglify-js": "^2.6.2"
+    "contour_plot": "^0.0.1"
   },
   "author": "Ben Frederickson"
 }
