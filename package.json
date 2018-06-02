@@ -20,14 +20,16 @@
     "esnext": true
   },
   "scripts": {
-    "pretest": "rm -rf build && mkdir build && json2module package.json > build/package.js && rollup -f umd -n fmin -o build/fmin.js -- index.js && rollup -f umd -n fmin_vis -o build/fmin_vis.js -- index_vis.js",
+    "pretest": "rm -rf build && mkdir build && json2module package.json > build/package.js && rollup -c",
     "test": "jshint src/*.js src/visualizations/*.js && tape 'test/**/*-test.js'",
     "prepare": "npm run test && uglifyjs build/fmin.js -c -m -o build/fmin.min.js",
     "postpublish": "zip -j build/fmin.zip -- LICENSE README.md build/fmin.js build/fmin.min.js"
   },
   "devDependencies": {
     "json2module": "0.0",
-    "rollup": "0.25",
+    "rollup": "^0.59.4",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
     "tape": "4",
     "uglify-js": "^2.6.0",
     "jshint": "^2.8.0"
