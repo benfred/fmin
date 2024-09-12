@@ -1,6 +1,6 @@
 {
     "name": "fmin",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Unconstrained funcion minimization in Javascript",
     "type": "module",
     "keywords": [
