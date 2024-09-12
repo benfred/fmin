@@ -3,12 +3,7 @@
     "version": "0.0.3",
     "description": "Unconstrained funcion minimization in Javascript",
     "type": "module",
-    "keywords": [
-        "fmin",
-        "optimization",
-        "Nelder-Mead",
-        "Conjudate Gradient"
-    ],
+    "keywords": ["fmin", "optimization", "Nelder-Mead", "Conjudate Gradient"],
     "license": "BSD-3-Clause",
     "main": "build/fmin.js",
     "jsnext:main": "index",
