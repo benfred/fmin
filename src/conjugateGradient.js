@@ -1,45 +1,47 @@
-import {dot, norm2, scale, weightedSum, gemv} from "./blas1";
-import {wolfeLineSearch} from "./linesearch";
+import { dot, gemv, norm2, scale, weightedSum } from './blas1';
+import { wolfeLineSearch } from './linesearch';
 
 export function conjugateGradient(f, initial, params) {
     // allocate all memory up front here, keep out of the loop for perfomance
     // reasons
-    var current = {x: initial.slice(), fx: 0, fxprime: initial.slice()},
-        next = {x: initial.slice(), fx: 0, fxprime: initial.slice()},
-        yk = initial.slice(),
-        pk, temp,
-        a = 1,
-        maxIterations;
+    let current = { x: initial.slice(), fx: 0, fxprime: initial.slice() };
+    let next = { x: initial.slice(), fx: 0, fxprime: initial.slice() };
+    const yk = initial.slice();
+    let pk;
+    let temp;
+    let a = 1;
+    let maxIterations;
 
     params = params || {};
     maxIterations = params.maxIterations || initial.length * 20;
 
     current.fx = f(current.x, current.fxprime);
     pk = current.fxprime.slice();
-    scale(pk, current.fxprime,-1);
+    scale(pk, current.fxprime, -1);
 
-    for (var i = 0; i < maxIterations; ++i) {
+    for (let i = 0; i < maxIterations; ++i) {
         a = wolfeLineSearch(f, pk, current, next, a);
 
         // todo: history in wrong spot?
         if (params.history) {
-            params.history.push({x: current.x.slice(),
-                                 fx: current.fx,
-                                 fxprime: current.fxprime.slice(),
-                                 alpha: a});
+            params.history.push({
+                x: current.x.slice(),
+                fx: current.fx,
+                fxprime: current.fxprime.slice(),
+                alpha: a,
+            });
         }
 
         if (!a) {
             // faiiled to find point that satifies wolfe conditions.
             // reset direction for next iteration
             scale(pk, current.fxprime, -1);
-
         } else {
             // update direction using Polak–Ribiere CG method
             weightedSum(yk, 1, next.fxprime, -1, current.fxprime);
 
-            var delta_k = dot(current.fxprime, current.fxprime),
-                beta_k = Math.max(0, dot(yk, next.fxprime) / delta_k);
+            const delta_k = dot(current.fxprime, current.fxprime);
+            const beta_k = Math.max(0, dot(yk, next.fxprime) / delta_k);
 
             weightedSum(pk, beta_k, pk, -1, next.fxprime);
 
@@ -54,10 +56,12 @@ export function conjugateGradient(f, initial, params) {
     }
 
     if (params.history) {
-        params.history.push({x: current.x.slice(),
-                             fx: current.fx,
-                             fxprime: current.fxprime.slice(),
-                             alpha: a});
+        params.history.push({
+            x: current.x.slice(),
+            fx: current.fx,
+            fxprime: current.fxprime.slice(),
+            alpha: a,
+        });
     }
 
     return current;
@@ -66,8 +70,12 @@ export function conjugateGradient(f, initial, params) {
 /// Solves a system of lienar equations Ax =b for x
 /// using the conjugate gradient method.
 export function conjugateGradientSolve(A, b, x, history) {
-    var r = x.slice(),
-        Ap = x.slice(), p, rsold, rsnew, alpha;
+    const r = x.slice();
+    const Ap = x.slice();
+    let p;
+    let rsold;
+    let rsnew;
+    let alpha;
 
     // r = b - A*x
     gemv(Ap, A, x);
@@ -75,13 +83,11 @@ export function conjugateGradientSolve(A, b, x, history) {
     p = r.slice();
     rsold = dot(r, r);
 
-    for (var i = 0; i < b.length; ++i) {
+    for (let i = 0; i < b.length; ++i) {
         gemv(Ap, A, p);
         alpha = rsold / dot(p, Ap);
         if (history) {
-            history.push({x: x.slice(),
-                         p: p.slice(),
-                         alpha: alpha});
+            history.push({ x: x.slice(), p: p.slice(), alpha: alpha });
         }
 
         //x=x+alpha*p;
@@ -93,13 +99,11 @@ export function conjugateGradientSolve(A, b, x, history) {
         if (Math.sqrt(rsnew) <= 1e-10) break;
 
         // p=r+(rsnew/rsold)*p;
-        weightedSum(p, 1, r, rsnew/rsold, p);
-        rsold=rsnew;
+        weightedSum(p, 1, r, rsnew / rsold, p);
+        rsold = rsnew;
     }
     if (history) {
-        history.push({x: x.slice(),
-                     p: p.slice(),
-                     alpha: alpha});
+        history.push({ x: x.slice(), p: p.slice(), alpha: alpha });
     }
     return x;
 }

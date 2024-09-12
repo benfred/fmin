@@ -1,0 +1,40 @@
+{
+    "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+    "organizeImports": {
+        "enabled": true
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            // TODO: Already existing errors and warnings.
+            "style": {
+                "noParameterAssign": "warn",
+                "noArguments": "warn"
+            },
+            "suspicious": {
+                "noAssignInExpressions": "warn"
+            },
+            "correctness": {
+                "noInvalidUseBeforeDeclaration": "warn"
+            }
+        }
+    },
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "crlf",
+        "lineWidth": 120,
+        "formatWithErrors": true
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "jsxQuoteStyle": "double",
+            "bracketSameLine": true
+        }
+    },
+    "files": {
+        "ignore": ["**/build/**/*.*"]
+    }
+}
