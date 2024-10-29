@@ -3,7 +3,6 @@
 
 import { expect, test } from 'vitest';
 
-import tape from 'tape';
 import * as fmin from '..';
 
 const SMALL = 1e-5;
