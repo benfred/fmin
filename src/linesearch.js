@@ -1,5 +1,4 @@
-import {dot, weightedSum} from "./blas1";
-
+import { dot, weightedSum } from './blas1';
 
 /// searches along line 'pk' for a point that satifies the wolfe conditions
 /// See 'Numerical Optimization' by Nocedal and Wright p59-60
@@ -9,32 +8,32 @@ import {dot, weightedSum} from "./blas1";
 /// next: output: contains next gradient/loss
 /// returns a: step size taken
 export function wolfeLineSearch(f, pk, current, next, a, c1, c2) {
-    var phi0 = current.fx, phiPrime0 = dot(current.fxprime, pk),
-        phi = phi0, phi_old = phi0,
-        phiPrime = phiPrime0,
-        a0 = 0;
+    const phi0 = current.fx;
+    const phiPrime0 = dot(current.fxprime, pk);
+    let phi = phi0;
+    let phi_old = phi0;
+    let phiPrime = phiPrime0;
+    let a0 = 0;
 
     a = a || 1;
     c1 = c1 || 1e-6;
     c2 = c2 || 0.1;
 
     function zoom(a_lo, a_high, phi_lo) {
-        for (var iteration = 0; iteration < 16; ++iteration) {
-            a = (a_lo + a_high)/2;
+        for (let iteration = 0; iteration < 16; ++iteration) {
+            a = (a_lo + a_high) / 2;
             weightedSum(next.x, 1.0, current.x, a, pk);
             phi = next.fx = f(next.x, next.fxprime);
             phiPrime = dot(next.fxprime, pk);
 
-            if ((phi > (phi0 + c1 * a * phiPrime0)) ||
-                (phi >= phi_lo)) {
+            if (phi > phi0 + c1 * a * phiPrime0 || phi >= phi_lo) {
                 a_high = a;
-
-            } else  {
+            } else {
                 if (Math.abs(phiPrime) <= -c2 * phiPrime0) {
                     return a;
                 }
 
-                if (phiPrime * (a_high - a_lo) >=0) {
+                if (phiPrime * (a_high - a_lo) >= 0) {
                     a_high = a_lo;
                 }
 
@@ -46,12 +45,11 @@ export function wolfeLineSearch(f, pk, current, next, a, c1, c2) {
         return 0;
     }
 
-    for (var iteration = 0; iteration < 10; ++iteration) {
+    for (let iteration = 0; iteration < 10; ++iteration) {
         weightedSum(next.x, 1.0, current.x, a, pk);
         phi = next.fx = f(next.x, next.fxprime);
         phiPrime = dot(next.fxprime, pk);
-        if ((phi > (phi0 + c1 * a * phiPrime0)) ||
-            (iteration && (phi >= phi_old))) {
+        if (phi > phi0 + c1 * a * phiPrime0 || (iteration && phi >= phi_old)) {
             return zoom(a0, a, phi_old);
         }
 
@@ -59,7 +57,7 @@ export function wolfeLineSearch(f, pk, current, next, a, c1, c2) {
             return a;
         }
 
-        if (phiPrime >= 0 ) {
+        if (phiPrime >= 0) {
             return zoom(a, a0, phi);
         }
 
